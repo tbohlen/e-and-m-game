@@ -3,19 +3,21 @@ window.gameEnv = {};
 // contain all work in a function scope, using this keyword to access
 // window.gameEnv and anything attached to it
 (function() {
+    var self = this;
+
     /*
      * Function: initWebGL
      * Initializes the webGL context and, if it fails, leaves us with nothing.
-     * The context is stored in gl
+     * The context is stored in this.gl
      */
     function initWebGL(canvas) {
-        //Initialize the global variable gl to null.
-        gl = null;
+        //Initialize the global variable this.gl to null.
+        this.gl = null;
 
         try {
             // Try to grab the standard context. If it fails, fallback
             // to experimental.
-            gl = canvas.getContext("webgl") ||
+            this.gl = canvas.getContext("webgl") ||
                 canvas.getContext("experimental-webgl");
         }
         catch(e) {
@@ -23,7 +25,7 @@ window.gameEnv = {};
         }
 
         // If we don't have a GL context, give up now
-        if (!gl) {
+        if (!this.gl) {
             alert("Unable to initialize WebGL. Your browser may not support it.");
         }
     }
@@ -33,17 +35,15 @@ window.gameEnv = {};
      * in black to make sure it exists.
      */
     $(document).ready(function(){
-        this.canvas = $("#game-canvas");
-        initWebGL(this.canvas[0]);
+        self.canvas = $("#game-canvas");
+        initWebGL.call(self, self.canvas[0]);
 
-        console.log("Created " + gl);
-
-        if (gl) {
+        if (self.gl) {
             console.log('GL');
-            gl.clearColor(0.0, 0.0, 0.0, 1.0);
-            gl.enable(gl.DEPTH_TEST);
-            gl.depthFunc(gl.LEQUAL);
-            gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+            self.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            self.gl.enable(self.gl.DEPTH_TEST);
+            self.gl.depthFunc(self.gl.LEQUAL);
+            self.gl.clear(self.gl.COLOR_BUFFER_BIT|self.gl.DEPTH_BUFFER_BIT);
         }
         else {
             console.log('No GL');
