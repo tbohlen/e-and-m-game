@@ -28,13 +28,14 @@ window.gameEnv = {
     initCanvas: function() {
         this.canvas = $("#game-canvas");
         this.initWebGL(this.canvas[0]);
+        var gl = this.gl;
 
-        if (this.gl) {
+        if (gl) {
             console.log('GL');
-            this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-            this.gl.enable(this.gl.DEPTH_TEST);
-            this.gl.depthFunc(this.gl.LEQUAL);
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT|this.gl.DEPTH_BUFFER_BIT);
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.enable(gl.DEPTH_TEST);
+            gl.depthFunc(gl.LEQUAL);
+            gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
         }
         else {
             console.log('No GL');
