@@ -4,7 +4,6 @@ window.gameEnv = {};
 // window.gameEnv and anything attached to it
 (function() {
     var self = this;
-
     /*
      * Function: initWebGL
      * Initializes the webGL context and, if it fails, leaves us with nothing.
@@ -30,24 +29,28 @@ window.gameEnv = {};
         }
     }
 
+    function initCanvas() {
+        this.canvas = $("#game-canvas");
+        initWebGL.call(this, self.canvas[0]);
+
+        if (self.gl) {
+            console.log('GL');
+            this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            this.gl.enable(this.gl.DEPTH_TEST);
+            this.gl.depthFunc(this.gl.LEQUAL);
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT|this.gl.DEPTH_BUFFER_BIT);
+        }
+        else {
+            console.log('No GL');
+        }
+    }
+
     /*
      * On ready, initialize the webGL context on the canvas. From there, color
      * in black to make sure it exists.
      */
     $(document).ready(function(){
-        self.canvas = $("#game-canvas");
-        initWebGL.call(self, self.canvas[0]);
-
-        if (self.gl) {
-            console.log('GL');
-            self.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-            self.gl.enable(self.gl.DEPTH_TEST);
-            self.gl.depthFunc(self.gl.LEQUAL);
-            self.gl.clear(self.gl.COLOR_BUFFER_BIT|self.gl.DEPTH_BUFFER_BIT);
-        }
-        else {
-            console.log('No GL');
-        }
+      initCanvas.call(self);
     });
 
 }).call(window.gameEnv);
