@@ -182,7 +182,6 @@ window.gameEnv = {
     }
 }
 
-
 /*
  * On ready, initialize the webGL context on the canvas. From there, color
  * in black to make sure it exists.
@@ -190,4 +189,3 @@ window.gameEnv = {
 $(document).ready(function(){
   gameEnv.initCanvas();
 });
-
