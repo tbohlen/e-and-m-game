@@ -170,10 +170,9 @@ window.gameEnv = {
       gl.drawArrays(gl.TRIANGLES, 0, triangleVB.numItems);
 
       mat4.identity(this.mvMatrix);
-      mat4.translate(this.mvMatrix, [1.5, 0.0, -7.0]); // move right
+      mat4.translate(this.mvMatrix, [1.5, 0.0, -8.0]); // move right
 
       this.setMatrixUniforms(gl);
-                     
       
       var squareVB = this.initSquare(gl);
       gl.bindBuffer(gl.ARRAY_BUFFER, squareVB);
