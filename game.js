@@ -4,6 +4,7 @@ window.gameEnv = {
     , scene: null
     , camera: null
     , renderer: null
+    , charges: []
 
     // triangle and square vertex buffers
     /*
@@ -42,11 +43,33 @@ window.gameEnv = {
     },
 
     initScene: function(gl, vertices, itemSize) {
-        var geometry = new THREE.CubeGeometry(1,1,1);
-        var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-        var cube = new THREE.Mesh(geometry, material);
-        this.scene.add(cube);
+        var geometry = new THREE.SphereGeometry(2, 20, 20);
+        geometry.computeVertexNormals();
+        var material = new THREE.MeshPhongMaterial({color: 0x880088});
+        var sphere = new THREE.Mesh(geometry, material);
+        sphere.vel = [0.0, 0.0, 0.0];
+        sphere.chargePos = [0.0, 0.0, 0.0];
+
+        var shipGeom = new THREE.SphereGeometry(0.5);
+        shipGeom.computeVertexNormals();
+
+        var ship = new THREE.Mesh(shipGeom, material);
+        ship.position.x = 4;
+        ship.vel = [0.0, 0.0, 0.0];
+        ship.chargePos = [0.0, 0.0, 0.0];
+
+        this.scene.add(sphere);
+        this.scene.add(ship);
+
+        this.charges.push(sphere);
+        this.charges.push(ship);
+
         this.camera.position.z = 5;
+
+        // add a directional light for shading
+        var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.9, 1 );
+        directionalLight.position.set( 5, 5, 8);
+        this.scene.add( directionalLight );
     },
 
     drawScene: function() {
