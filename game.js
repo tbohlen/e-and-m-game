@@ -33,7 +33,7 @@ window.gameEnv = {};
         this.canvas = $("#game-canvas");
         initWebGL.call(this, self.canvas[0]);
 
-        if (self.gl) {
+        if (this.gl) {
             console.log('GL');
             this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
             this.gl.enable(this.gl.DEPTH_TEST);
