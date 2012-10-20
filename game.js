@@ -57,34 +57,34 @@ window.gameEnv = {
         }
     },
 
+    initBuffer: function(gl, vertices, itemSize) {
+      var buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+      buffer.itemSize = itemSize;
+      buffer.numItems = vertices.length / itemSize;
+      return buffer;
+    },
+
     initTriangle: function(gl) {
-      this.triangleVB = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVB);
       var vertices = [
         0.0, 1.0, 0.0,
        -1.0, -1.0, 0.0,
         1.0, -1.0, 0.0];
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-      this.triangleVB.itemSize = 3;
-      this.triangleVB.numItems = 3;
+      return this.initBuffer(gl, vertices, 3);
     },
 
     initSquare: function(gl) {
-      this.squareVB = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVB);
       var vertices = [
            1.0,  1.0,  0.0,
           -1.0,  1.0,  0.0,
            1.0, -1.0,  0.0,
           -1.0, -1.0,  0.0
       ];
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-      this.squareVB.itemSize = 3;
-      this.squareVB.numItems = 4;
+      return this.initBuffer(gl, vertices, 3);
     },
 
     initBuffers: function(gl) {
-      this.initTriangle(gl);
       this.initSquare(gl);
     },
 
@@ -154,17 +154,32 @@ window.gameEnv = {
       mat4.identity(this.mvMatrix);
       mat4.translate(this.mvMatrix, [-1.5, 0.0, -7.0]); // move left
 
-      // specify current buffer
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVB);
-      // set the vertex buffer to point at PosAttr to get vertices
-      gl.vertexAttribPointer(this.vertexPosAttr,
-                             this.triangleVB.itemSize, gl.FLOAT, false, 0, 0);
-
       this.setMatrixUniforms(gl);
+
+      // specify current buffer
+      var triangleVB = this.initTriangle(gl);
+      console.log(triangleVB);
+      gl.bindBuffer(gl.ARRAY_BUFFER, triangleVB);
+      // set the vertex buffer to point at PosAttr to get vertices
+      // step through the array, itemSize elem chunks at a time
+      gl.vertexAttribPointer(this.vertexPosAttr,
+                             triangleVB.itemSize, gl.FLOAT, false, 0, 0);
 
       // draw the vertexes we just pointed to, treating them as triangle
       // positions
-      gl.drawArrays(gl.TRIANGLES, 0, this.triangleVB.numItems);
+      gl.drawArrays(gl.TRIANGLES, 0, triangleVB.numItems);
+
+      mat4.identity(this.mvMatrix);
+      mat4.translate(this.mvMatrix, [1.5, 0.0, -7.0]); // move right
+
+      this.setMatrixUniforms(gl);
+                     
+      
+      var squareVB = this.initSquare(gl);
+      gl.bindBuffer(gl.ARRAY_BUFFER, squareVB);
+      gl.vertexAttribPointer(this.vertexPosAttr,
+                             squareVB.itemSize, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVB.numItems);
     }
 }
 
