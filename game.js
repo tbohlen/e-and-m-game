@@ -1,24 +1,17 @@
 // set up a game environment to contain all of our variables
 window.gameEnv = {
-    canvas: null,
-    gl: null,
+    canvas: null
+    , scene: null
+    , camera: null
+    , renderer: null
 
     // triangle and square vertex buffers
-    triangleVB: null,
-    squareVB: null,
-    shaderProgram: null,
-    vertexPosAttr: null,
-    vertexColorAttr: null,
-    pMatrix: null,
-    pMatrixU: null,
-    mvMatrix: null,
-    mvMatixU: null,
     /*
      * Function: initWebGL
      * Initializes the webGL context and, if it fails, leaves us with nothing.
      * The context is stored in this.gl
      */
-    initWebGL: function(canvas) {
+    , initWebGL: function(canvas) {
 
         try {
             // Try to grab the standard context. If it fails, fallback
@@ -41,7 +34,8 @@ window.gameEnv = {
         this.camera = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(800, 600);
-        $('body').append(this.renderer.domElement);
+        this.canvas = this.renderer.domElement;
+        $('body').append(this.canvas);
 
         this.initScene();
         this.drawScene()
