@@ -10,25 +10,8 @@
     <script type="text/javascript" src="lib/jquery.min.js" charset="utf-8"></script>
     <script type="text/javascript" src="lib/gl-matrix/gl-matrix.js" charset="utf-8"></script>
     <script type="text/javascript" src="game.js" charset="utf-8"></script>
-    <script id="frag-shaders" type="x-shaders, x-fragment" charset="utf-8">
-        START frag-shader
-        void main(void) {
-            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-        }
-        END frag-shader
-    </script>
-    <script id="vert-shaders" type="x-shaders, x-fragment" charset="utf-8">
-        START vert-shader
-        attribute vec3 aVertexPosition;
 
-        uniform mat4 uMVMatrix;
-        uniform mat4 uPMatrix;
-
-        void main(void) {
-            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-        }
-        END vert-shader
-    </script>
+    <script type="text/javascript" src="physics.js" charset="utf-8"></script>
     
 </head>
 <body>
