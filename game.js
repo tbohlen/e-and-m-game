@@ -2,6 +2,17 @@
 window.gameEnv = {
     canvas: null,
     gl: null,
+
+    // triangle and square vertex buffers
+    triangleVB: null,
+    squareVB: null,
+    shaderProgram: null,
+    vertexPosAttr: null,
+    vertexColorAttr: null,
+    pMatrix: null,
+    pMatrixU: null,
+    mvMatrix: null,
+    mvMatixU: null,
     /*
      * Function: initWebGL
      * Initializes the webGL context and, if it fails, leaves us with nothing.
@@ -26,8 +37,8 @@ window.gameEnv = {
     },
 
     initCanvas: function() {
-        this.canvas = $("#game-canvas");
-        this.initWebGL(this.canvas[0]);
+        this.canvas = $("#game-canvas")[0];
+        this.initWebGL(this.canvas);
         var gl = this.gl;
 
         if (gl) {
@@ -36,10 +47,124 @@ window.gameEnv = {
             gl.enable(gl.DEPTH_TEST);
             gl.depthFunc(gl.LEQUAL);
             gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+
+            this.initShaders(gl);
+            this.initBuffers(gl);
+            this.drawScene(gl);
         }
         else {
             console.log('No GL');
         }
+    },
+
+    initTriangle: function(gl) {
+      this.triangleVB = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVB);
+      var vertices = [
+        0.0, 1.0, 0.0,
+       -1.0, -1.0, 0.0,
+        1.0, -1.0, 0.0];
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+      this.triangleVB.itemSize = 3;
+      this.triangleVB.numItems = 3;
+    },
+
+    initSquare: function(gl) {
+      this.squareVB = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVB);
+      var vertices = [
+           1.0,  1.0,  0.0,
+          -1.0,  1.0,  0.0,
+           1.0, -1.0,  0.0,
+          -1.0, -1.0,  0.0
+      ];
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+      this.squareVB.itemSize = 3;
+      this.squareVB.numItems = 4;
+    },
+
+    initBuffers: function(gl) {
+      this.initTriangle(gl);
+      this.initSquare(gl);
+    },
+
+    getShader: function(gl, sel) {
+      var shader;
+      var shaderScript = $(sel);
+      if (shaderScript) {
+        var str = shaderScript.text();
+        var shaderType = (shaderScript.attr("type") == "x-shader/x-fragment") ?
+                          gl.FRAGMENT_SHADER : gl.VERTEX_SHADER;
+        shader = gl.createShader(shaderType);
+        gl.shaderSource(shader, str);
+        gl.compileShader(shader);
+
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          alert(gl.getShaderInfoLog(shader));
+          return null;
+        }
+      }
+
+      return shader;
+    },
+
+    initShaders: function(gl) {
+      var vertexShader   = this.getShader(gl, "#shader-vs");
+      var fragmentShader = this.getShader(gl, "#shader-fs");
+
+      this.shaderProgram = gl.createProgram();
+      gl.attachShader(this.shaderProgram, vertexShader);
+      gl.attachShader(this.shaderProgram, fragmentShader);
+      gl.linkProgram(this.shaderProgram);
+
+      if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+        alert("Could not initialise shaders");
+      }
+
+      gl.useProgram(this.shaderProgram);
+
+      this.vertexPosAttr = gl.getAttribLocation(this.shaderProgram, "aVertexPosition");
+      gl.enableVertexAttribArray(this.vertexPosAttr);
+
+      // grab the uPMatrix and uMVMatrix values from the shader program
+      this.pMatrixU = gl.getUniformLocation(this.shaderProgram, "uPMatrix");
+      this.mvMatrixU = gl.getUniformLocation(this.shaderProgram, "uMVMatrix");
+
+      console.log("shaders initialized.");
+    },
+
+    setMatrixUniforms: function(gl) {
+      // set uniforms to the values of pMatrix and mvMatrix
+      gl.uniformMatrix4fv(this.pMatrixU, false, this.pMatrix);
+      gl.uniformMatrix4fv(this.mvMatrixU, false, this.mvMatrix);
+    },
+
+    drawScene: function(gl) {
+      this.mvMatrix = mat4.create(); // moodel-view matrix
+      this.pMatrix = mat4.create(); // perspective matrix
+
+      gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+      var aspectRatio = this.canvas.width / this.canvas.height;
+      console.log(aspectRatio);
+      mat4.perspective(45, aspectRatio, 
+                       0.1, 100.0, this.pMatrix);
+
+      mat4.identity(this.mvMatrix);
+      mat4.translate(this.mvMatrix, [-1.5, 0.0, -7.0]); // move left
+
+      // specify current buffer
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVB);
+      // set the vertex buffer to point at PosAttr to get vertices
+      gl.vertexAttribPointer(this.vertexPosAttr,
+                             this.triangleVB.itemSize, gl.FLOAT, false, 0, 0);
+
+      this.setMatrixUniforms(gl);
+
+      // draw the vertexes we just pointed to, treating them as triangle
+      // positions
+      gl.drawArrays(gl.TRIANGLES, 0, this.triangleVB.numItems);
     }
 }
 
