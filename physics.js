@@ -167,14 +167,16 @@ ChargeSystem.prototype.getState = function() {
 ChargeSystem.prototype.setState = function(newState) {
     var key;
     for (key in this.charges) {
-        // set each value in the charge manually. Transform inconvenient and
-        // slow (rather than just setting an array) but helps code elsewhere
-        var ch = this.charges[key];
-        var st = newState[key];
-        ch.position.x = st[0];
-        ch.position.y = st[1];
-        ch.position.z = st[2];
-        ch.velocity = [st[3], st[4], st[5]];
-        ch.charge = st[6];
+        if (!this.charges[key].static) {
+            // set each value in the charge manually. Transform inconvenient and
+            // slow (rather than just setting an array) but helps code elsewhere
+            var ch = this.charges[key];
+            var st = newState[key];
+            ch.position.x = st[0];
+            ch.position.y = st[1];
+            ch.position.z = st[2];
+            ch.velocity = [st[3], st[4], st[5]];
+            ch.charge = st[6];
+        }
     }
 };

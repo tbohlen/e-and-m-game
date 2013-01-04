@@ -57,7 +57,8 @@ window.gameEnv = {
         var sphere = new THREE.Mesh(geometry, material);
         sphere.velocity = [0.0, 0.0, 0.0];
         sphere.chargePos = [0.0, 0.0, 0.0];
-        sphere.charge = -1;
+        sphere.charge = 0;
+        sphere.static = true;
 
 
         var shipMaterial = new THREE.MeshPhongMaterial({color: 0x0000AA});
@@ -81,9 +82,12 @@ window.gameEnv = {
         this.chargeSystem.addCharge(this.ship);
 
         // add a directional light for shading
-        var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.9, 1 );
+        var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0, 1 );
         directionalLight.position.set( 5, 5, 8);
+        var ambientLight = new THREE.AmbientLight( 0x444444 );
+        ambientLight.position.set( 0, 5, 0);
         this.scene.add( directionalLight );
+        this.scene.add(ambientLight);
     },
 
     drawScene: function() {
@@ -128,7 +132,7 @@ window.gameEnv = {
         if (screenMouseY && Math.abs(screenMouseY) > 10) {
             upDownAngle = (2 * Math.PI * screenMouseY) / (window.gameEnv.canvas.height() * 0.5 * window.gameEnv.framesPerTurn);
         }
-        var leftRight = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, 1, 0), leftRightAngle);
+        var leftRight = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, -1, 0), leftRightAngle);
         var upDown = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(1, 0, 0), upDownAngle);
 
         var rot = (new THREE.Quaternion()).multiply(leftRight, upDown);
