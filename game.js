@@ -51,14 +51,33 @@ window.gameEnv = {
     },
 
     initScene: function(gl, vertices, itemSize) {
-        var geometry = new THREE.SphereGeometry(2, 20, 20);
-        geometry.computeVertexNormals();
-        var material = new THREE.MeshPhongMaterial({color: 0x880088});
-        var sphere = new THREE.Mesh(geometry, material);
-        sphere.velocity = [0.0, 0.0, 0.0];
-        sphere.chargePos = [0.0, 0.0, 0.0];
-        sphere.charge = 0;
-        sphere.static = true;
+        for (var i = 0; i < 2; i++) {
+            var geometry = new THREE.SphereGeometry(1, 20, 20);
+            geometry.computeVertexNormals();
+            var material = new THREE.MeshPhongMaterial({color: 0xaa0000});
+            var sphere = new THREE.Mesh(geometry, material);
+            sphere.position.set( boundedRand(-5, 5), boundedRand(-5, 5), boundedRand(-5, 5));
+            sphere.velocity = [0.0, 0.0, 0.0];
+            sphere.chargePos = [0.0, 0.0, 0.0];
+            sphere.charge = -1;
+            sphere.static = true;
+            this.scene.add(sphere);
+            this.chargeSystem.addCharge(sphere);
+        }
+
+        for (var i = 0; i < 2; i++) {
+            var geometry = new THREE.SphereGeometry(1, 20, 20);
+            geometry.computeVertexNormals();
+            var material = new THREE.MeshPhongMaterial({color: 0x0000aa});
+            var sphere = new THREE.Mesh(geometry, material);
+            sphere.position.set( boundedRand(-5, 5), boundedRand(-5, 5), boundedRand(-5, 5));
+            sphere.velocity = [0.0, 0.0, 0.0];
+            sphere.chargePos = [0.0, 0.0, 0.0];
+            sphere.charge = 1;
+            sphere.static = true;
+            this.scene.add(sphere);
+            this.chargeSystem.addCharge(sphere);
+        }
 
 
         var shipMaterial = new THREE.MeshPhongMaterial({color: 0x0000AA});
@@ -71,14 +90,12 @@ window.gameEnv = {
         this.ship.position.z = 5;
         this.ship.velocity = [0.0, 0.0, 0.0];
         this.ship.chargePos = [0.0, 0.0, 0.0];
-        this.ship.charge = -1;
+        this.ship.charge = 1;
         this.ship.useQuaternion = true;
         this.ship.quaterion = (new THREE.Quaternion()).setFromEuler(new THREE.Vector3(0, 0, 0));
 
-        this.scene.add(sphere);
         this.scene.add(this.ship);
 
-        this.chargeSystem.addCharge(sphere);
         this.chargeSystem.addCharge(this.ship);
 
         // add a directional light for shading
